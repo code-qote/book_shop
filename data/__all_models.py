@@ -14,11 +14,9 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
                            primary_key=True, autoincrement=True)
     surname = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    address = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
+    image = sqlalchemy.Column(sqlalchemy.BLOB, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-
-    reviews = orm.relation("Review", back_populates='users')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -36,8 +34,7 @@ class Book(SqlAlchemyBase, SerializerMixin):
     about = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
     author = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     year = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
-
-    reviews = orm.relation("Review", back_populates='books')
+    image = sqlalchemy.Column(sqlalchemy.Binary, nullable=False)
 
 
 class Review(SqlAlchemyBase, SerializerMixin):
@@ -45,10 +42,10 @@ class Review(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                             primary_key=True, autoincrement=True)
-    author = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
-    book = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('books.id'), nullable=False)
+    author = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    rate = sqlalchemy.Column(sqlalchemy.Float, nullable=False)
+    text = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+    book = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     date = sqlalchemy.Column(sqlalchemy.DateTime,
                                       default=datetime.datetime.now)
     
-    user = orm.relation('User')
-    book = orm.relation('Book')
