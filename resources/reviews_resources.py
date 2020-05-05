@@ -11,11 +11,9 @@ def abort_404(review_id):
         abort(404, message=f'Review {review_id} not found')
 
 parser = reqparse.RequestParser()
-parser.add_argument('title', required=True)
-parser.add_argument('content', required=True)
-parser.add_argument('is_private', required=True, type=bool)
-parser.add_argument('is_published', required=True, type=bool)
-parser.add_argument('user_id', required=True, type=int)
+parser.add_argument('author', required=True, type=int)
+parser.add_argument('book', required=True)
+parser.add_argument('date', required=True)
 
 
 class ReviewResource(Resource):
@@ -24,9 +22,22 @@ class ReviewResource(Resource):
         session = create_session()
         book = session.query(Review).get(review_id)
         return jsonify(
-            {'review':book.to_dict(only=('id', 'author', 'book', 'date'))})
-    
-    def post(self):
-
+            {'review':book.to_dict(only=('author', 'book', 'date'))})
 
 class ReviewListResource(Resource):
+    def get(self):
+        session = create_session()
+        reviews = session.query(Review).all()
+        return jsonify({'review':[review.to_dict(only=('author', 'book', 'date')) for review in reviews]})
+
+    def post(self):
+        args = parser.parse_args()
+        session = create_session()
+        review = Review(
+            author=args['author'],
+            book=args['book'],
+            date=args['date']
+        )
+        session.add(review)
+        session.commit()
+        return jsonify({'success': 'OK'})

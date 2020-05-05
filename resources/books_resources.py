@@ -17,11 +17,11 @@ class BookResource(Resource):
         session = create_session()
         book = session.query(Book).get(book_id)
         return jsonify(
-            {'book':book.to_dict(only=('id', 'name', 'about', 'author', 'year'))})
+            {'book':book.to_dict(only=('name', 'about', 'author', 'year'))})
 
 class BookListResource(Resource):
     def get(self):
         session = create_session()
         books = session.query(Book).all()
         return jsonify({'books': [book.to_dict(
-            only=('id', 'name', 'about', 'author', 'year')) for book in books]})
+            only=('name', 'about', 'author', 'year')) for book in books]})

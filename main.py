@@ -9,6 +9,7 @@ from flask import render_template
 from data import db_session
 from data.__all_models import *
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+import datetime
 
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ csfr = CsrfProtect()
 
 
 def main():
-    db_session.global_init("db/database.sqlite")  
+    db_session.global_init("db/database.sqlite")
     app.run(port=8080, host='127.0.0.1')
     csfr.init_app(app)
 

@@ -18,6 +18,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
+    reviews = orm.relation("Review", back_populates='users')
+
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
@@ -35,6 +37,8 @@ class Book(SqlAlchemyBase, SerializerMixin):
     author = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     year = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
 
+    reviews = orm.relation("Review", back_populates='books')
+
 
 class Review(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'reviews'
@@ -43,5 +47,8 @@ class Review(SqlAlchemyBase, SerializerMixin):
                             primary_key=True, autoincrement=True)
     author = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     book = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('books.id'), nullable=False)
-    date = sqlalchemy.DateTime(sqlalchemy.DateTime,
+    date = sqlalchemy.Column(sqlalchemy.DateTime,
                                       default=datetime.datetime.now)
+    
+    user = orm.relation('User')
+    book = orm.relation('Book')
