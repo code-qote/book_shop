@@ -43,3 +43,6 @@ class BuyingForm(FlaskForm):
         session = create_session()
         book = session.query(Book).get(id)
         self.count.widget = NumberInput(min=1, max=book.count)
+
+class BasketForm(FlaskForm):
+    submit = SubmitField('Купить')
