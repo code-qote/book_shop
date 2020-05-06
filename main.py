@@ -115,9 +115,20 @@ def genre_page(genre_id):
     genres = get(url_api + '/genres').json()['genres']
     return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
 
-@app.route('/books/<int:book_id>')
+@app.route('/books/<int:book_id>', methods=['GET', 'POST'])
 def book_page(book_id):
     search = SearchForm()
+    review = ReviewForm()
+    book = get(url_api + '/books/' + str(book_id)).json()['book']
+    if review.validate_on_submit():
+        json = {
+            'author': current_user.id,
+            'rate': review.rating.data,
+            'text': review.text.data,
+            'book': book_id
+        }
+        post(url_api + '/reviews', json=json)
+    return render_template('book_page.html', book=book, search=search, review=review)     
     
 
 

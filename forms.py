@@ -6,6 +6,7 @@ from flask_wtf.csrf import CsrfProtect
 from wtforms import *
 from wtforms.validators import DataRequired
 import flask_wtf.file
+from flask_wtf.html5 import NumberInput
 from flask import render_template
 
 class RegisterForm(FlaskForm):
@@ -29,4 +30,5 @@ class SearchForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     text = TextAreaField('Ваш отзыв', validators=[DataRequired()])
+    rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5))
     submit = SubmitField('Отправить')

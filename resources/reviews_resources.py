@@ -51,7 +51,7 @@ class ReviewListResource(Resource):
         review = Review(
             author=args['author'],
             book=args['book'],
-            date=datetime.datetime.now(),
+            date=str(datetime.datetime.now()),
             text=args['text'],
             rate=args['rate']
         )

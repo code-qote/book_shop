@@ -16,7 +16,6 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    price = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     def set_password(self, password):
@@ -59,6 +58,5 @@ class Review(SqlAlchemyBase, SerializerMixin):
     rate = sqlalchemy.Column(sqlalchemy.Float, nullable=False)
     text = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
     book = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
-    date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                      default=datetime.datetime.now)
+    date = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     

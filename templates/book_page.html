@@ -8,5 +8,21 @@
     {{ search.request(class="form-control") }}<br>
     {{ search.submit(type="submit", class="btn btn-primary") }}</br>
 </form>
-<img src=""
+<p>
+<img src="/static/img/{{book['image']}}" alt='Не найдено'>
+<h2>{{ book['name'] }}</h2><br>
+<h3>{{ book['author'] }}</h3><br>
+<h3>Стоимость: {{ book['price'] }}</h3><br>
+</p>
+<p>{{ book['about'] }}</p>
+{% if current_user.is_authenticated %}
+    <form action="" method="post" name="review">
+        {{ search.hidden_tag() }}
+        {{ search.csrf_token }}
+        {{ review.text.label }}<br>
+        {{ review.text(class='form-control') }}<br>
+        {{ review.rating() }}
+        {{ review.submit(type="submit", class="btn btn-primary") }}<br>
+    </form>
+{% endif %}
 {% endblock %}
