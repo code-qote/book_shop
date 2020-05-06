@@ -32,19 +32,6 @@ class UserListResource(Resource):
         users = session.query(User).all()
         return jsonify({'user':[user.to_dict(only=('surname', 'name', 'email', 'image')) for user in users]})
 
-    def post(self):
-        args = parser.parse_args()
-        session = create_session()
-        user = User(
-            surname=args['surname'],
-            name=args['name'],
-            email=args['email'],
-            image=args['image']
-        )
-        user.set_password(form.password.data)
-        session.add(user)
-        session.commit()
-        return jsonify({'success': 'OK'})
     
     def delete(self, user_id):
         abort_404_user(user_id)

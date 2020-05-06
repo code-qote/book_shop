@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post" name="search">
+    {{ search.hidden_tag() }}
+    {{ search.csrf_token }}
+    {{ search.request.label }}<br>
+    {{ search.request(class="form-control") }}<br>
+    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
+</form>
+<img src=""
+{% endblock %}

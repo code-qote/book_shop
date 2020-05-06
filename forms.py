@@ -26,3 +26,7 @@ class LoginForm(FlaskForm):
 class SearchForm(FlaskForm):
     request = StringField('Введите запрос', validators=[DataRequired()])
     submit = SubmitField('Поиск')
+
+class ReviewForm(FlaskForm):
+    text = TextAreaField('Ваш отзыв', validators=[DataRequired()])
+    submit = SubmitField('Отправить')

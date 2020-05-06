@@ -1,8 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-{{ search.request.label }}<br>
-{{ search.request(class="form-control") }}<br>
-{{ search.submit }}</br>
+<form action="" method="post" name="search">
+    {{ search.hidden_tag() }}
+    {{ search.csrf_token }}
+    {{ search.request.label }}<br>
+    {{ search.request(class="form-control") }}<br>
+    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
+</form>
+<table>
+    <tr>
+        <td>
+            <table>
+            {% for book3 in books %}
+                <tr>
+                {% for book in book3 %}
+                    <td>
+                        <img src="/static/img/{{book['image']}}" width="128" height="128"><br>
+                        {{ book["name"] }}<br>
+                        {{ book["author"] }}<br>
+                        {{ book["price"] }}<br>
+                        {{ book["genre"] }}<br>
+                    </td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+            </table>
+        </td>
+        <td>
+            {% for genre in genres %}
+                <a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a><br>   
+            {% endfor %}
+            
+        </td>
+        <td>
+
+        </td>
+    </tr>
+</table>
 {% endblock %}
 
