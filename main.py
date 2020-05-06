@@ -5,11 +5,11 @@ from flask import redirect
 from flask_wtf.csrf import CsrfProtect
 from wtforms import *
 from wtforms.validators import DataRequired
-from flask import render_template, g
+from flask import render_template
 from data import db_session
 from data.__all_models import *
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from resources import books_resources, reviews_resources, genres_resources
+from resources import books_resources, reviews_resources, genres_resources, users_resource
 from forms import *
 import datetime
 from werkzeug.utils import secure_filename
@@ -65,10 +65,12 @@ def register():
         user = User(
             email=form.email.data,
             surname=form.surname.data,
-            name=form.name.data
+            name=form.name.data,
+            basket=''
         )
         if form.image.data:
-            filename = secure_filename(form.image.data.filename)
+            tp = secure_filename(form.image.data.filename)[-4:]
+            filename = form.email.data + tp
             form.image.data.save('static/users/' + filename)
             user.image = filename
         user.set_password(form.password.data)
@@ -119,17 +121,77 @@ def genre_page(genre_id):
 def book_page(book_id):
     search = SearchForm()
     review = ReviewForm()
+    buying = BuyingForm()
+    buying.check_count(book_id)
+    ordered = False
+    if current_user.is_authenticated and current_user.basket:
+        basket = current_user.basket
+        basket = [i.split() for i in basket.split(',')][:-1]
+        for i in basket:
+            if int(i[0]) == book_id:
+                ordered = True
+                break
+    if search.validate_on_submit():
+        books = get(url_api + '/books').json()['books']
+        request = search.request.data
+        for book in books:
+            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+        books.sort(key = lambda x: x['search'])
+        books = list(filter(lambda x: x['search'] != 0, books))
+        genres = get(url_api + '/genres').json()['genres']
+        return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
+    if buying.validate_on_submit():
+        session = create_session()
+        book = session.query(Book).get(book_id)
+        user = session.query(User).get(current_user.id)
+        user.basket += f'{book_id} {buying.count.data},'
+        book.count -= buying.count.data
+        session.commit()
+        return redirect('/books/' + str(book_id))
     book = get(url_api + '/books/' + str(book_id)).json()['book']
+    reviews = get(url_api + '/reviews').json()['reviews']
+    users = get(url_api + '/users').json()['users']
+    accepted = True
+    if list(filter(lambda x: x['author'] == current_user.id and x['book'] == book_id, reviews)):
+        accepted = False
+    reviews = list(filter(lambda x: x['book'] == book_id, reviews))
     if review.validate_on_submit():
         json = {
             'author': current_user.id,
             'rate': review.rating.data,
             'text': review.text.data,
-            'book': book_id
+            'book': book_id,
+            'user': f'{current_user.name} {current_user.surname}',
         }
+        if current_user.image:
+            json['image'] = current_user.image
         post(url_api + '/reviews', json=json)
-    return render_template('book_page.html', book=book, search=search, review=review)     
+        reviews = get(url_api + '/reviews').json()['reviews']
+        reviews = list(filter(lambda x: x['book'] == book_id, reviews))
+        accepted = False
+        return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)
+    return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)     
     
+@app.route('/basket/<int:user_id>')
+def basket_page(user_id):
+    form = BasketForm()
+    search = SearchForm()
+    if search.validate_on_submit():
+        books = get(url_api + '/books').json()['books']
+        request = search.request.data
+        for book in books:
+            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+        books.sort(key = lambda x: x['search'])
+        books = list(filter(lambda x: x['search'] != 0, books))
+        genres = get(url_api + '/genres').json()['genres']
+        return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
+    if form.validate_on_submit():
+        pass
+    
+@app.route('/delete_review/<int:book_id>/<int:review_id>', methods=['GET', 'DELETE'])
+def delete_review(book_id, review_id):
+    delete(url_api + '/reviews/' + str(review_id))
+    return redirect(f'/books/{book_id}')
 
 
 def main():
@@ -140,6 +202,8 @@ def main():
     api.add_resource(reviews_resources.ReviewListResource, '/api/reviews')
     api.add_resource(genres_resources.GenreResource, '/api/genres/<int:genre_id>')
     api.add_resource(genres_resources.GenreListResource, '/api/genres')
+    api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
+    api.add_resource(users_resource.UserListResource, '/api/users')
     app.run(port=8080, host='127.0.0.1')
     csfr.init_app(app)
 

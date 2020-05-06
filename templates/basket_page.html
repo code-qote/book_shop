@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post" name="search">
+    {{ search.hidden_tag() }}
+    {{ search.csrf_token }}
+    {{ search.request.label }}<br>
+    {{ search.request(class="form-control") }}<br>
+    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
+</form>
+{% for item in items %}
+    <img src="/static/img/{{ item['image'] }}" alt='Не найдено'>
+    <h3>{{ item['name'] }}</h3>
+    <h3>{{ item['author'] }}</h3>
+    <h3>{{ item['count'] }}</h3>
+    <h3>{{ item['count'] * item['price'] }}</h3>
+    <a href="/delete_basket_item/{{ current_user.id }}/{{ item['id'] }}"  class="btn btn-danger">Удалить</a>
+{% endfor %}
+<form action="" method="post" name="buy"></form>
+    {{ search.hidden_tag() }}
+    {{ search.csrf_token }}
+    {{ form.submit.label }}<br>
+    {{ form.submit(type="submit", class="btn btn-primary") }}<br>
+</form>

@@ -8,6 +8,8 @@ from wtforms.validators import DataRequired
 import flask_wtf.file
 from flask_wtf.html5 import NumberInput
 from flask import render_template
+from data.db_session import create_session
+from data.__all_models import Book
 
 class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
@@ -30,5 +32,14 @@ class SearchForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     text = TextAreaField('Ваш отзыв', validators=[DataRequired()])
-    rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5))
+    rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5, step=1))
     submit = SubmitField('Отправить')
+
+class BuyingForm(FlaskForm):
+    count = IntegerField('Количество', validators=[DataRequired()], widget=NumberInput())
+    submit = SubmitField('Отправить в корзину')
+
+    def check_count(self, id):
+        session = create_session()
+        book = session.query(Book).get(id)
+        self.count.widget = NumberInput(min=1, max=book.count)

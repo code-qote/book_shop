@@ -16,6 +16,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    basket = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     def set_password(self, password):
@@ -39,6 +40,7 @@ class Book(SqlAlchemyBase, SerializerMixin):
     is_new = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     is_bestseller = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    count = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
 
 
 class Genre(SqlAlchemyBase, SerializerMixin):
@@ -59,4 +61,6 @@ class Review(SqlAlchemyBase, SerializerMixin):
     text = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
     book = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     date = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    user = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    image = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     

@@ -8,21 +8,40 @@
     {{ search.request(class="form-control") }}<br>
     {{ search.submit(type="submit", class="btn btn-primary") }}</br>
 </form>
-<p>
 <img src="/static/img/{{book['image']}}" alt='Не найдено'>
 <h2>{{ book['name'] }}</h2><br>
 <h3>{{ book['author'] }}</h3><br>
-<h3>Стоимость: {{ book['price'] }}</h3><br>
-</p>
+<h3>Стоимость: {{ book['price'] }} руб.</h3><br>
 <p>{{ book['about'] }}</p>
-{% if current_user.is_authenticated %}
+{% if current_user.is_authenticated and ordered == False %}
+    <form action="" method="post" name="buying">
+        {{ search.hidden_tag() }}
+        {{ search.csrf_token }}
+        {{ buying.count.label }}<br>
+        {{ buying.count() }}<br>
+        {{ buying.submit(type="submit", class="btn btn-primary")}}<br>
+    </form>
+{% endif %}
+{% if current_user.is_authenticated and accepted == True %}
     <form action="" method="post" name="review">
         {{ search.hidden_tag() }}
         {{ search.csrf_token }}
         {{ review.text.label }}<br>
         {{ review.text(class='form-control') }}<br>
-        {{ review.rating() }}
+        {{ review.rating.label }}<br>
+        {{ review.rating() }}<br>
         {{ review.submit(type="submit", class="btn btn-primary") }}<br>
     </form>
 {% endif %}
+{% for review_ in reviews %}
+    <img src="/static/users/{{ review_['image'] }}" alt='Не найдено'>
+    <h2>{{ review_["user"] }}</h2>
+    <h2>{{ review_["rate"] }}</h2>
+    <p>{{ review_["text"] }}</p>
+    {% if review_["author"] == current_user.id %}
+        <p>
+            <a href="/delete_review/{{ review_['book'] }}/{{ review_['id'] }}"  class="btn btn-danger">Удалить</a>
+        </p>
+    {% endif %}
+{% endfor %}
 {% endblock %}

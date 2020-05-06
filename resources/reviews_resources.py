@@ -29,6 +29,8 @@ parser.add_argument('author', required=True, type=int)
 parser.add_argument('book', required=True, type=int)
 parser.add_argument('rate', required=True, type=float)
 parser.add_argument('text', required=False)
+parser.add_argument('user', required=True)
+parser.add_argument('image', required=False)
 
 
 class ReviewResource(Resource):
@@ -37,13 +39,21 @@ class ReviewResource(Resource):
         session = create_session()
         book = session.query(Review).get(review_id)
         return jsonify(
-            {'review':book.to_dict(only=('author', 'rate', 'text', 'book', 'date'))})
+            {'review':book.to_dict(only=('author', 'rate', 'text', 'book', 'date', 'user', 'image'))})
+    
+    def delete(self, review_id):
+        abort_404_review(review_id)
+        session = create_session()
+        review = session.query(Review).get(review_id)
+        session.delete(review)
+        session.commit()
+        return jsonify({'success': 'OK'})
 
 class ReviewListResource(Resource):
     def get(self):
         session = create_session()
         reviews = session.query(Review).all()
-        return jsonify({'review':[review.to_dict(only=('author', 'rate', 'text', 'book', 'date')) for review in reviews]})
+        return jsonify({'reviews':[review.to_dict(only=('id', 'author', 'rate', 'text', 'book', 'date', 'user', 'image')) for review in reviews]})
 
     def post(self):
         args = parser.parse_args()
@@ -53,18 +63,13 @@ class ReviewListResource(Resource):
             book=args['book'],
             date=str(datetime.datetime.now()),
             text=args['text'],
-            rate=args['rate']
+            rate=args['rate'],
+            user=args['user'],
+            image=args['image']
         )
         abort_404_author(args['author'])
         abort_404_book(args['book'])
         session.add(review)
         session.commit()
         return jsonify({'success': 'OK'})
-    
-    def delete(self, review_id):
-        abort_404_review(review_id)
-        session = create_session()
-        review = session.query(Review).get(review_id)
-        session.delete(review)
-        session.commit()
-        return jsonify({'success': 'OK'})
+

@@ -16,6 +16,8 @@ parser.add_argument('surname', required=True)
 parser.add_argument('name', required=True)
 parser.add_argument('email', required=True)
 parser.add_argument('image', required=False)
+parser.add_argument('hashed_password', required=True)
+parser.add_argument('basket', required=False)
 
 
 class UserResource(Resource):
@@ -26,13 +28,6 @@ class UserResource(Resource):
         return jsonify(
             {'user':user.to_dict(only=('surname', 'name', 'email', 'image'))})
     
-class UserListResource(Resource):
-    def get(self):
-        session = create_session()
-        users = session.query(User).all()
-        return jsonify({'user':[user.to_dict(only=('surname', 'name', 'email', 'image')) for user in users]})
-
-    
     def delete(self, user_id):
         abort_404_user(user_id)
         session = create_session()
@@ -40,3 +35,9 @@ class UserListResource(Resource):
         session.delete(user)
         session.commit()
         return jsonify({'success': 'OK'})
+    
+class UserListResource(Resource):
+    def get(self):
+        session = create_session()
+        users = session.query(User).all()
+        return jsonify({'users':[user.to_dict(only=('surname', 'name', 'email', 'image')) for user in users]})
