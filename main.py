@@ -274,9 +274,9 @@ def delete_basket_item(user_id, book_id):
 @login_required
 def add_book():
     genres = [genre['name'] for genre in get(url_api + '/genres').json()['genres']]
+    form = AddEditBookForm()
+    form.update_genres(genres)
     if current_user.is_admin == True:
-        form = AddEditBookForm()
-        form.update_genres(genres)
         if form.validate_on_submit():
             json = {
                 'name': form.name.data,
@@ -290,50 +290,57 @@ def add_book():
             }
             genre = list(filter(lambda x: x['name'] == form.genre.data, get(url_api + '/genres').json()['genres']))[0]
             json['genre'] = genre['id']
-            last_id = get(url_api + '/books').json()['books'][-1]['id']
+            try:
+                last_id = get(url_api + '/books').json()['books'][-1]['id']
+            except IndexError:
+                last_id = 0
             tp = secure_filename(form.image.data.filename)[-4:]
             filename = str(last_id + 1) + tp
             form.image.data.save('static/img/' + filename)
             json['image'] = filename
             post(url_api + '/books', json=json)
-        return render_template('add_edit_book.html', form=form)
+            return redirect('/')
+        return render_template('add_book.html', form=form)
     return redirect('/')
 
 @app.route('/edit_book/<int:book_id>', methods=['GET', 'POST'])
 @login_required
 def edit_book(book_id):
     genres = [genre['name'] for genre in get(url_api + '/genres').json()['genres']]
+    import flask_wtf.file
+    form = AddEditBookForm()
+    form.genre.choices = [(choice, choice) for choice in genres]
+    form.image.validators = []
     if current_user.is_admin == True:
-        form = AddEditBookForm()
-        form.genres = genres
-        book = get(url_api + '/books/' + str(book_id)).json()['book']
-        if book:
-            form.name.data = book['name']
-            form.about.data = book['about']
-            form.author.data = book['author']
-            form.year.data = book['year']
-            genre_name = get(url_api + '/genres' + str(book['genre'])).json()['genre']['name']
-            form.genre.data = genre_name
-            form.price.data = book['price']
-            form.is_new = book['is_new']
-            form.is_bestseller = book['is_bestseller']
-            form.count = book['count']
-            if form.validate_on_submit():
-                session = create_session()
-                book = session.query(Book).get(book_id)
-                book.name = form.name.data
-                book.about = form.about.data
-                book.author = form.author.data
-                book.year = form.year.data
-                genre = list(filter(lambda x: x['name'] == form.genre.data, get(url_api + '/genres').json()['genres']))[0]
-                book.genre = genre['id']
-                book.price = form.price.data
-                book.is_new = form.is_new.data
-                book.is_bestseller = form.is_bestseller.data
-                book.count = form.count.data
-                session.commit()
-                return redirect('/')
-            return render_template('add_edit_book.html', form=form)
+        if request.method == "GET":
+            book = get(url_api + '/books/' + str(book_id)).json()['book']
+            if book:
+                form.name.data = book['name']
+                form.about.data = book['about']
+                form.author.data = book['author']
+                form.year.data = book['year']
+                genre_name = get(url_api + '/genres/' + str(book['genre'])).json()['genre']['name']
+                form.genre.data = genre_name
+                form.price.data = book['price']
+                form.is_new.data = book['is_new']
+                form.is_bestseller.data = book['is_bestseller']
+                form.count.data = book['count']
+        if form.validate_on_submit():
+            session = create_session()
+            book = session.query(Book).get(book_id)
+            book.name = form.name.data
+            book.about = form.about.data
+            book.author = form.author.data
+            book.year = form.year.data
+            genre = list(filter(lambda x: x['name'] == form.genre.data, get(url_api + '/genres').json()['genres']))[0]
+            book.genre = genre['id']
+            book.price = form.price.data
+            book.is_new = form.is_new.data
+            book.is_bestseller = form.is_bestseller.data
+            book.count = form.count.data
+            session.commit()
+            return redirect('/')
+        return render_template('edit_book.html', form=form)
         return redirect('/')              
     return redirect('/')
 

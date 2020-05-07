@@ -18,7 +18,7 @@ class GenreResource(Resource):
         session = create_session()
         genre = session.query(Genre).get(genre_id)
         return jsonify(
-            {'genre':genre.to_dict(only=('name'))})
+            {'genre':genre.to_dict(only=('id', 'name'))})
 
 class GenreListResource(Resource):
     def get(self):

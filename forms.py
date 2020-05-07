@@ -50,12 +50,11 @@ class BasketForm(FlaskForm):
     submit = SubmitField('Купить')
 
 class AddEditBookForm(FlaskForm):
-    genres = []
     name = StringField('Название', validators=[DataRequired()])
     about = TextAreaField('Описание', validators=[DataRequired()])
     author = StringField('Автор', validators=[DataRequired()])
     year = IntegerField('Год', validators=[DataRequired()])
-    genre = SelectField('Жанр', choices=genres)
+    genre = SelectField('Жанр', choices=[])
     price = IntegerField('Цена', validators=[DataRequired()])
     is_new = BooleanField('Новинка')
     is_bestseller = BooleanField('Бестселлер')
@@ -64,8 +63,8 @@ class AddEditBookForm(FlaskForm):
     submit = SubmitField('Сохранить')
 
     def update_genres(self, genres):
-        self.genres = genres
-        print(self.genres)
+        self.genre.choices = [(choice, choice) for choice in genres]
+
 
 class DeleteBookForm(FlaskForm):
     id = IntegerField('Id', validators=[DataRequired()])
