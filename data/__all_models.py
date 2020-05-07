@@ -17,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     basket = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    is_admin = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     def set_password(self, password):

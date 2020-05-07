@@ -8,9 +8,9 @@ from wtforms.validators import DataRequired
 from flask import render_template
 from data import db_session
 from data.__all_models import *
+from forms import *
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from resources import books_resources, reviews_resources, genres_resources, users_resource
-from forms import *
 import datetime
 from werkzeug.utils import secure_filename
 from requests import get, post, delete
@@ -19,7 +19,6 @@ from email.header import Header
 import smtplib
 import os
 
-
 app = Flask(__name__)
 api = Api(app)
 login_manager = LoginManager()
@@ -27,7 +26,6 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'scrtky'
 csfr = CsrfProtect()
 url_api = 'http://localhost:8080/api'
-
 
 def main_page_books(books):
     new = []
@@ -87,7 +85,8 @@ def register():
             email=form.email.data,
             surname=form.surname.data,
             name=form.name.data,
-            basket=''
+            basket='',
+            is_admin=False
         )
         if form.image.data:
             tp = secure_filename(form.image.data.filename)[-4:]
@@ -270,6 +269,82 @@ def delete_basket_item(user_id, book_id):
     user.basket = ','.join([' '.join(item) for item in basket])
     session.commit()
     return redirect('/basket/' + str(user_id))
+
+@app.route('/add_book', methods=['GET', 'POST'])
+@login_required
+def add_book():
+    genres = [genre['name'] for genre in get(url_api + '/genres').json()['genres']]
+    if current_user.is_admin == True:
+        form = AddEditBookForm()
+        form.update_genres(genres)
+        if form.validate_on_submit():
+            json = {
+                'name': form.name.data,
+                'about': form.about.data,
+                'author': form.author.data,
+                'year': form.year.data,
+                'price': form.price.data,
+                'is_new': form.is_new.data,
+                'is_bestseller': form.is_bestseller.data,
+                'count': form.count.data
+            }
+            genre = list(filter(lambda x: x['name'] == form.genre.data, get(url_api + '/genres').json()['genres']))[0]
+            json['genre'] = genre['id']
+            last_id = get(url_api + '/books').json()['books'][-1]['id']
+            tp = secure_filename(form.image.data.filename)[-4:]
+            filename = str(last_id + 1) + tp
+            form.image.data.save('static/img/' + filename)
+            json['image'] = filename
+            post(url_api + '/books', json=json)
+        return render_template('add_edit_book.html', form=form)
+    return redirect('/')
+
+@app.route('/edit_book/<int:book_id>', methods=['GET', 'POST'])
+@login_required
+def edit_book(book_id):
+    genres = [genre['name'] for genre in get(url_api + '/genres').json()['genres']]
+    if current_user.is_admin == True:
+        form = AddEditBookForm()
+        form.genres = genres
+        book = get(url_api + '/books/' + str(book_id)).json()['book']
+        if book:
+            form.name.data = book['name']
+            form.about.data = book['about']
+            form.author.data = book['author']
+            form.year.data = book['year']
+            genre_name = get(url_api + '/genres' + str(book['genre'])).json()['genre']['name']
+            form.genre.data = genre_name
+            form.price.data = book['price']
+            form.is_new = book['is_new']
+            form.is_bestseller = book['is_bestseller']
+            form.count = book['count']
+            if form.validate_on_submit():
+                session = create_session()
+                book = session.query(Book).get(book_id)
+                book.name = form.name.data
+                book.about = form.about.data
+                book.author = form.author.data
+                book.year = form.year.data
+                genre = list(filter(lambda x: x['name'] == form.genre.data, get(url_api + '/genres').json()['genres']))[0]
+                book.genre = genre['id']
+                book.price = form.price.data
+                book.is_new = form.is_new.data
+                book.is_bestseller = form.is_bestseller.data
+                book.count = form.count.data
+                session.commit()
+                return redirect('/')
+            return render_template('add_edit_book.html', form=form)
+        return redirect('/')              
+    return redirect('/')
+
+@app.route('/delete_book/<int:book_id>', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def delete_book(book_id):
+    if current_user.is_admin:
+        delete(url_api + '/books/' + str(book_id))
+        return redirect('/')
+    return redirect('/')
+
 
 def main():
     db_session.global_init("db/database.sqlite")

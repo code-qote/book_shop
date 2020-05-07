@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post" name="add_edit_book">
+    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
+    {{ form.name.label }}
+    {{ form.name() }}
+    {{ form.about.label }}
+    {{ form.about() }}
+    {{ form.author.label }}
+    {{ form.author() }}
+    {{ form.year.label }}
+    {{ form.year() }}
+    {{ form.genre.label }}
+    {{ form.genre() }}
+    {{ form.price.label }}
+    {{ form.price() }}
+    {{ form.is_new.label }}
+    {{ form.is_new() }}
+    {{ form.is_bestseller.label }}
+    {{ form.is_bestseller() }}
+    {{ form.image.label }}
+    {{ form.image() }}
+    {{ form.count.label }}
+    {{ form.count() }}
+    {{ form.submit(type="submit", class="btn btn-primary") }}
+</form>
+{% endblock %}
+

@@ -27,7 +27,7 @@ def abort_404_book(book_id):
 parser = reqparse.RequestParser()
 parser.add_argument('author', required=True, type=int)
 parser.add_argument('book', required=True, type=int)
-parser.add_argument('rate', required=True, type=float)
+parser.add_argument('rate', required=True, type=int)
 parser.add_argument('text', required=False)
 parser.add_argument('user', required=True)
 parser.add_argument('image', required=False)

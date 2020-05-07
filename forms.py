@@ -10,6 +10,8 @@ from flask_wtf.html5 import NumberInput
 from flask import render_template
 from data.db_session import create_session
 from data.__all_models import Book
+from requests import get, post, delete
+from main import url_api
 
 class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -46,3 +48,25 @@ class BuyingForm(FlaskForm):
 
 class BasketForm(FlaskForm):
     submit = SubmitField('Купить')
+
+class AddEditBookForm(FlaskForm):
+    genres = []
+    name = StringField('Название', validators=[DataRequired()])
+    about = TextAreaField('Описание', validators=[DataRequired()])
+    author = StringField('Автор', validators=[DataRequired()])
+    year = IntegerField('Год', validators=[DataRequired()])
+    genre = SelectField('Жанр', choices=genres)
+    price = IntegerField('Цена', validators=[DataRequired()])
+    is_new = BooleanField('Новинка')
+    is_bestseller = BooleanField('Бестселлер')
+    image = flask_wtf.file.FileField('Фотография', validators=[flask_wtf.file.FileRequired(), flask_wtf.file.FileAllowed(['jpg', 'png'], 'Только фотографии!')])
+    count = IntegerField('Количество', validators=[DataRequired()])
+    submit = SubmitField('Сохранить')
+
+    def update_genres(self, genres):
+        self.genres = genres
+        print(self.genres)
+
+class DeleteBookForm(FlaskForm):
+    id = IntegerField('Id', validators=[DataRequired()])
+    submit = SubmitField('Удалить')
