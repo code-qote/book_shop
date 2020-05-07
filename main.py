@@ -14,6 +14,9 @@ from forms import *
 import datetime
 from werkzeug.utils import secure_filename
 from requests import get, post, delete
+from email.mime.text import MIMEText
+from email.header import Header
+import smtplib
 import os
 
 
@@ -36,6 +39,24 @@ def main_page_books(books):
     if len(books) % 3 != 0:
         new.append(books[-(len(books) - last):])
     return new
+
+def send_email(email, text):
+    smtp_host = 'smtp.yandex.ru'
+    login, password = 'bshelf.shop@yandex.ru', 'password_to_app'
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = Header('Заказ', 'utf-8')
+    msg['From'] = login
+    msg['To'] = email
+    sender = smtplib.SMTP(smtp_host, 587)
+    sender.set_debuglevel(1)
+    sender.starttls()
+    sender.login(login, password)
+    try:
+        sender.sendmail(
+        msg['From'], msg['To'], msg.as_string())
+    except:
+        return 'Error'
 
 
 @login_manager.user_loader
@@ -95,6 +116,7 @@ def login():
 
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/new', methods=['GET', 'POST'])
 def main_page():
     search = SearchForm()
     if search.validate_on_submit():
@@ -110,12 +132,29 @@ def main_page():
     genres = get(url_api + '/genres').json()['genres']
     return render_template('main_page.html',  books=main_page_books(books), genres=genres, search=search)
 
-@app.route('/genres/<int:genre_id>')
+@app.route('/genres/<int:genre_id>', methods=['GET', 'POST'])
 def genre_page(genre_id):
     search = SearchForm()
+    
     books = list(filter(lambda x: x['genre'] == genre_id, get(url_api + '/books').json()['books']))
     genres = get(url_api + '/genres').json()['genres']
     return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
+
+@app.route('/bestsellers', methods=['GET', 'POST'])
+def bestsellers_page():
+    search = SearchForm()
+    if search.validate_on_submit():
+        books = get(url_api + '/books').json()['books']
+        request = search.request.data
+        for book in books:
+            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+        books.sort(key = lambda x: x['search'])
+        books = list(filter(lambda x: x['search'] != 0, books))
+        genres = get(url_api + '/genres').json()['genres']
+        return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
+    books = list(filter(lambda x: x['is_bestseller'] == 1, get(url_api + '/books').json()['books']))
+    genres = get(url_api + '/genres').json()['genres']
+    return render_template('main_page.html',  books=main_page_books(books), genres=genres, search=search)
 
 @app.route('/books/<int:book_id>', methods=['GET', 'POST'])
 def book_page(book_id):
@@ -172,10 +211,31 @@ def book_page(book_id):
         return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)
     return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)     
     
-@app.route('/basket/<int:user_id>')
+@app.route('/basket/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def basket_page(user_id):
     form = BasketForm()
     search = SearchForm()
+    session = create_session()
+    text = ''
+    basket = [i.split() for i in current_user.basket.split(',')][:-1]
+    books = get(url_api + '/books').json()['books']
+    items = []
+    total = 0
+    for item in basket:
+        book = list(filter(lambda x: x['id'] == int(item[0]), books))[0]
+        text += f"{ book['name'] } { book['author'] } { item[1] } \n{int(item[1]) * book['price']} руб.\n-------------------\n"
+        items.append(
+            {
+                'id': book['id'],
+                'name': book['name'],
+                'author': book['author'],
+                'count': int(item[1]),
+                'price': book['price']
+            }
+        )
+        total += book['price'] * int(item[1])
+    text += f'Итого: {total}'
     if search.validate_on_submit():
         books = get(url_api + '/books').json()['books']
         request = search.request.data
@@ -186,13 +246,30 @@ def basket_page(user_id):
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
     if form.validate_on_submit():
-        pass
+        user = session.query(User).get(current_user.id)
+        send_email(user.email, text)
+        user.basket = ''
+        session.commit()
+        return redirect('/')
+    return render_template('basket_page.html', items=items, total=total, form=form, search=search)       
     
 @app.route('/delete_review/<int:book_id>/<int:review_id>', methods=['GET', 'DELETE'])
 def delete_review(book_id, review_id):
     delete(url_api + '/reviews/' + str(review_id))
     return redirect(f'/books/{book_id}')
 
+@app.route('/delete_basket_item/<int:user_id>/<int:book_id>', methods=['GET', 'POST'])
+def delete_basket_item(user_id, book_id):
+    session = create_session()
+    basket = [i.split() for i in current_user.basket.split(',')][:-1]
+    for item in basket.copy():
+        if int(item[0]) == book_id:
+            basket.remove(item)
+            break
+    user = session.query(User).get(user_id)
+    user.basket = ','.join([' '.join(item) for item in basket])
+    session.commit()
+    return redirect('/basket/' + str(user_id))
 
 def main():
     db_session.global_init("db/database.sqlite")

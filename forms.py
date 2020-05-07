@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from flask import redirect
 from flask_wtf.csrf import CsrfProtect
 from wtforms import *
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 import flask_wtf.file
 from flask_wtf.html5 import NumberInput
 from flask import render_template
@@ -12,7 +12,7 @@ from data.db_session import create_session
 from data.__all_models import Book
 
 class RegisterForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторить пароль', validators=[DataRequired()])
     surname = StringField('Фамилия', validators=[DataRequired()])
@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
     sumbit = SubmitField('Зарегистрироваться')
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
