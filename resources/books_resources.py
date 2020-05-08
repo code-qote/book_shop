@@ -30,7 +30,7 @@ class BookResource(Resource):
         session = create_session()
         book = session.query(Book).get(book_id)
         return jsonify(
-            {'book':book.to_dict(only=('name', 'about', 'author', 'year', 'genre', 'price', 'count', 'is_new', 'is_bestseller', 'image'))})
+            {'book':book.to_dict(only=('id', 'name', 'about', 'author', 'year', 'genre', 'price', 'count', 'is_new', 'is_bestseller', 'image'))})
         
     def delete(self, book_id):
         abort_404(book_id)

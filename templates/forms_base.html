@@ -16,10 +16,9 @@
 <body>
 <table>
     <tr>
-      <td class="nav-item"><div class="pad"><a href="/"><img src="/static/img/home.png" alt="Домой"></a></div></td>
       {% if current_user.is_authenticated %}
           <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/logout">Выйти из аккаунта</a></div></td>
-          <td class="nav-item"><div class="pad"><a href="/basket/{{ current_user.id }}"> <img src="/static/img/basket.png" alt="Корзина"> </a></div></td>
+          <td class="nav-item"><div class="pad"></li><a class="h4 mb-2" href="/basket/{{ current_user.id }}">Корзина</a></div></td>
           {% if current_user.is_admin %}
           <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/add_book">Добавить книгу</a></div></td>
           {% endif %}
@@ -29,16 +28,6 @@
       {% endif %}
     </tr>
 </table>
-<form action="" method="post" name="search">
-  {{ search.hidden_tag() }}
-  {{ search.csrf_token }}
-  <center>
-      {{ search.request.label(class="text-center mt-0") }}
-      <div class="ss">{{ search.request(class="form-control focus") }}</div><br>
-      {{ search.submit(type="submit", class="btn btn-primary btn-xl js-scroll-trigger") }}<br>
-  </center>
-</form>
-<br>
   {% block content %}{% endblock %}
 </body>
 </html>

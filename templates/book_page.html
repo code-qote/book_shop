@@ -1,47 +1,65 @@
 {% extends "base.html" %}
 
+{% block style %}
+<title>Книга</title>
+<style>
+    div.short{
+        width: 300px;
+    }
+    div.big_mar{
+        margin-left: 30px;
+
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<form action="" method="post" name="search">
-    {{ search.hidden_tag() }}
-    {{ search.csrf_token }}
-    {{ search.request.label }}<br>
-    {{ search.request(class="form-control") }}<br>
-    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
-</form>
-<img src="/static/img/{{book['image']}}" alt='Не найдено'>
-<h2>{{ book['name'] }}</h2><br>
-<h3>{{ book['author'] }}</h3><br>
-<h3>Стоимость: {{ book['price'] }} руб.</h3><br>
-<p>{{ book['about'] }}</p>
-{% if current_user.is_authenticated and ordered == False %}
-    <form action="" method="post" name="buying">
-        {{ search.hidden_tag() }}
-        {{ search.csrf_token }}
-        {{ buying.count.label }}<br>
-        {{ buying.count() }}<br>
-        {{ buying.submit(type="submit", class="btn btn-primary")}}<br>
-    </form>
-{% endif %}
-{% if current_user.is_authenticated and accepted == True %}
-    <form action="" method="post" name="review">
-        {{ search.hidden_tag() }}
-        {{ search.csrf_token }}
-        {{ review.text.label }}<br>
-        {{ review.text(class='form-control') }}<br>
-        {{ review.rating.label }}<br>
-        {{ review.rating() }}<br>
-        {{ review.submit(type="submit", class="btn btn-primary") }}<br>
-    </form>
-{% endif %}
-{% for review_ in reviews %}
-    <img src="/static/users/{{ review_['image'] }}" alt='Не найдено'>
-    <h2>{{ review_["user"] }}</h2>
-    <h2>{{ review_["rate"] }}</h2>
-    <p>{{ review_["text"] }}</p>
-    {% if review_["author"] == current_user.id %}
+<center>
+    <img src="/static/img/{{book['image']}}" width="512" height="512" alt='Не найдено'>
+    <h2 class="text-black mt-0">{{ book['name'] }}</h2><br>
+    <h3 class="h3 mb-2">{{ book['author'] }}</h3><br>
+    <p class="text-black-50 mb-4">{{ book['about'] }}</p>
+    <h4 class="h4 mb-2">Стоимость: {{ book['price'] }} руб.</h4><br>
+</center>
+<div class="big_mar">
+    {% if current_user.is_authenticated and current_user.is_admin == True %}
         <p>
-            <a href="/delete_review/{{ review_['book'] }}/{{ review_['id'] }}"  class="btn btn-danger">Удалить</a>
+            <a href="/edit_book/{{ book['id'] }}"  class="btn btn-warning">Изменить</a>
+            <a href="/delete_book/{{ book['id'] }}"  class="btn btn-danger">Удалить</a>
         </p>
     {% endif %}
-{% endfor %}
+    {% if current_user.is_authenticated and ordered == False %}
+        <form action="" method="post" name="buying">
+            {{ search.hidden_tag() }}
+            {{ search.csrf_token }}
+            {{ buying.count.label(class="h4 mb-2") }}<br>
+            <div class="short">{{ buying.count(class = "form-control") }}</div><br>
+            <br>
+            {{ buying.submit(type="submit", class="btn btn-primary")}}<br>
+        </form>
+    {% endif %}
+    <br>
+    {% if current_user.is_authenticated and accepted == True %}
+        <form action="" method="post" name="review">
+            {{ search.hidden_tag() }}
+            {{ search.csrf_token }}
+            {{ review.text.label(class="h4 mb-2") }}<br>
+            {{ review.text(class='form-control') }}<br>
+            {{ review.rating.label(class="h4 mb-2") }}<br>
+            <div class="short">{{ review.rating(class = "form-control") }}</div><br>
+            {{ review.submit(type="submit", class="btn btn-primary") }}<br>
+        </form>
+    {% endif %}
+    {% for review_ in reviews %}
+        <img src="/static/users/{{ review_['image'] }}" width="128" height="128" alt='Не найдено'>
+        <h2 class="h2 mb-2">{{ review_["user"] }}</h2>
+        <h2 class="h2 mb-2">{{ review_["rate"] }}</h2>
+        <p class="text-black-50 mb-4">{{ review_["text"] }}</p>
+        {% if review_["author"] == current_user.id %}
+            <p>
+                <a href="/delete_review/{{ review_['book'] }}/{{ review_['id'] }}"  class="btn btn-danger">Удалить</a>
+            </p>
+        {% endif %}
+    {% endfor %}
+</div>
 {% endblock %}

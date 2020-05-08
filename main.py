@@ -30,13 +30,15 @@ url_api = 'http://localhost:8080/api'
 def main_page_books(books):
     new = []
     last = 0
+    i = 0
+    a = []
     for i in range(len(books)):
-        if i % 3 == 0 and i != 0:
-            new.append(books[i - 3:i])
-            last = i
-    if len(books) % 3 != 0:
-        new.append(books[-(len(books) - last):])
+        a.append(books[i])
+        if (i + 1) % 7 == 0 or (i + 1) == len(books):
+            new.append(a)
+            a = []
     return new
+
 
 def send_email(email, text):
     smtp_host = 'smtp.yandex.ru'
@@ -230,11 +232,12 @@ def basket_page(user_id):
                 'name': book['name'],
                 'author': book['author'],
                 'count': int(item[1]),
-                'price': book['price']
+                'price': book['price'],
+                'image': book['image']
             }
         )
         total += book['price'] * int(item[1])
-    text += f'Итого: {total}'
+    text += f'Итого: {total} руб.'
     if search.validate_on_submit():
         books = get(url_api + '/books').json()['books']
         request = search.request.data

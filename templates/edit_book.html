@@ -1,28 +1,52 @@
-{% extends "base.html" %}
+{% extends "forms_base.html" %}
+
+{% block style %}
+    <title>Изменение</title>
+    <style>
+        div.container{
+            display: flex;
+            align-self: center;
+            align-items: center;
+            justify-self: center;
+            justify-content: center;
+        }
+        div.field{
+            display: flex;
+            align-self: center;
+            align-items: flex-start;
+            justify-self: center;
+            justify-content: left;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<form action="" method="post" name="add_edit_book" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    {{ form.csrf_token }}
-    {{ form.name.label }}<br>
-    {{ form.name() }}<br>
-    {{ form.about.label }}<br>
-    {{ form.about() }}<br>
-    {{ form.author.label }}<br>
-    {{ form.author() }}<br>
-    {{ form.year.label }}<br>
-    {{ form.year() }}<br>
-    {{ form.genre.label }}<br>
-    {{ form.genre() }}<br>
-    {{ form.price.label }}<br>
-    {{ form.price() }}<br>
-    {{ form.is_new.label }}<br>
-    {{ form.is_new() }}<br>
-    {{ form.is_bestseller.label }}<br>
-    {{ form.is_bestseller() }}<br>
-    {{ form.count.label }}<br>
-    {{ form.count() }}<br>
-    {{ form.submit(type="submit", class="btn btn-primary") }}<br>
-</form>
+    <div class="container"><h2>Изменение</h2></div>
+    <div class="container">
+        <form action="" method="post" name="add_edit_book" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            {{ form.name.label }}<br>
+            {{ form.name(class = "form-control") }}<br>
+            {{ form.about.label }}<br>
+            {{ form.about(class = "form-control") }}<br>
+            {{ form.author.label }}<br>
+            {{ form.author(class = "form-control") }}<br>
+            {{ form.year.label }}<br>
+            {{ form.year(class = "form-control") }}<br>
+            {{ form.genre.label }}<br>
+            {{ form.genre(class = "form-control") }}<br>
+            {{ form.price.label }}<br>
+            {{ form.price(class = "form-control") }}<br>
+            {{ form.is_new.label }}<br>
+            {{ form.is_new() }}<br>
+            {{ form.is_bestseller.label }}<br>
+            {{ form.is_bestseller() }}<br>
+            {{ form.count.label }}<br>
+            {{ form.count(class = "form-control") }}<br>
+            <br>
+            {{ form.submit(type="submit", class = "form-control") }}<br>
+        </form>
+    </div>  
 {% endblock %}
 

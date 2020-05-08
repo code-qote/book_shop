@@ -20,7 +20,7 @@ class RegisterForm(FlaskForm):
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     image = flask_wtf.file.FileField('Фотография', validators=[flask_wtf.file.FileRequired(), flask_wtf.file.FileAllowed(['jpg', 'png'], 'Только фотографии!')])
-    sumbit = SubmitField('Зарегистрироваться')
+    submit = SubmitField('Зарегистрироваться')
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -33,7 +33,7 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Поиск')
 
 class ReviewForm(FlaskForm):
-    text = TextAreaField('Ваш отзыв', validators=[DataRequired()])
+    text = TextAreaField('Ваш отзыв')
     rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5, step=1))
     submit = SubmitField('Отправить')
 

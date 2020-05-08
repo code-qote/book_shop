@@ -1,31 +1,41 @@
 {% extends "base.html" %}
 
+{% block style %}
+<title>Корзина</title>
+<style>
+    div.short{
+        width: 300px;
+    }
+    div.big_mar{
+        margin-left: 30px;
+
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<form action="" method="post" name="search">
-    {{ search.hidden_tag() }}
-    {{ search.csrf_token }}
-    {{ search.request.label }}<br>
-    {{ search.request(class="form-control") }}<br>
-    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
-</form>
-{% if items %}
-    {% for item in items %}
-        <a href="/books/{{ item['id'] }}">
-            <img src="/static/img/{{ item['image'] }}" alt='Не найдено'>
-            <h3>{{ item['name'] }}</h3>
-            <h3>{{ item['author'] }}</h3>
-        </a>
-        <h3>{{ item['count'] }}</h3>
-        <h3>{{ item['count'] * item['price'] }} руб.</h3>
-        <a href="/delete_basket_item/{{ current_user.id }}/{{ item['id'] }}"  class="btn btn-danger">Удалить</a>
-    {% endfor %}
-    <h2>Итого: {{ total }} руб.</h2>
-    <form action="" method="post" name="buy">
-        {{ form.hidden_tag() }}
-        {{ form.csrf_token }}
-        {{ form.submit(type="submit", class="btn btn-primary") }}<br>
-    </form>
-{% else %}
-<h2>Корзина пуста</h2>
-{% endif %}
+<div class="big_mar">
+    {% if items %}
+        {% for item in items %}
+            <a href="/books/{{ item['id'] }}">
+                <img src="/static/img/{{ item['image'] }}" width="128" height="128" alt='Не найдено'>
+                <h3 class="h3 mb-2">{{ item['name'] }}</h3>
+                <h3 class="h3 mb-2">{{ item['author'] }}</h3>
+            </a>
+            <h3 class="h3 mb-2">Количество: {{ item['count'] }}</h3>
+            <h3 class="h3 mb-2">{{ item['count'] * item['price'] }} руб.</h3>
+            <a href="/delete_basket_item/{{ current_user.id }}/{{ item['id'] }}"  class="btn btn-danger">Удалить</a>
+            <br>
+            <hr class="divider my-4">
+        {% endfor %}
+        <h2  class="h2 mb-2" >Итого: {{ total }} руб.</h2>
+        <form action="" method="post" name="buy">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            {{ form.submit(type="submit", class="btn btn-primary") }}<br>
+        </form>
+    {% else %}
+    <h2>Корзина пуста</h2>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "forms_base.html" %}
 
 {% block style %}
 <title>{{ title }}</title>
@@ -6,26 +6,41 @@
     div.container{
         display: flex;
         align-self: center;
+        align-items: center;
         justify-self: center;
+        justify-content: center;
+    }
+    div.field{
+        display: flex;
+        align-self: center;
+        align-items: flex-start;
+        justify-self: center;
+        justify-content: left;
     }
 </style>
 {% endblock %}
 
 {% block content %}
     <h2>{{ message }}</h2>
-    <h2>Register Form</h2>
+    <div class="container"><h2>Регистрация</h2></div>
     <div class="container">
         <form action="" method="post" name="register" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
-            {% for field in form if field.widget.input_type != 'hidden' %}
-                {{ field.label() }}
-                {{ field() }}
-                {% for error in field.errors %}
-                    <div class="error">{{ error }}</div>
-                {% endfor %}
-                </br>
-            {% endfor %}
+            {{ form.email.label }}     
+            {{ form.email(class = "form-control") }}
+            {{ form.password.label }}
+            {{ form.password(class = "form-control") }}<br>
+            {{ form.password_again.label }}
+            {{ form.password_again(class = "form-control") }}<br>
+            {{ form.surname.label }}
+            {{ form.surname(class = "form-control") }}<br>
+            {{ form.name.label }}
+            {{ form.name(class = "form-control") }}<br>
+            {{ form.image.label }}<br>
+            {{ form.image() }}<br>
+            <br>
+            {{ form.submit(class = "form-control") }}<br>
         </form>
     </div>
 {% endblock %}

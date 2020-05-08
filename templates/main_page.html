@@ -1,25 +1,40 @@
 {% extends "base.html" %}
+{% block style %}
+<style>
+    div.genres{
+        top: 0%;
+    }
+    .book{
+        padding: 10px;
+    }
+</style>
+<title>BookShelf</title>
+{% endblock %}
 
 {% block content %}
-<form action="" method="post" name="search">
-    {{ search.hidden_tag() }}
-    {{ search.csrf_token }}
-    {{ search.request.label }}<br>
-    {{ search.request(class="form-control") }}<br>
-    {{ search.submit(type="submit", class="btn btn-primary") }}</br>
-</form>
-<p>
-    <a href="/new">Новинки</a>
-    <a href="/bestsellers">Бестселлеры</a>
-</p>
+<div class="container h-10"></div>
+    <div class="row h-10 align-items-center justify-content-center text-center">
+        <div class="col-lg-10 align-self-end">
+            <hr class="divider my-4">
+            <h1 class="text-uppercase text-black font-weight-bold">BookShelf</h1>
+            <hr class="divider my-4">
+        </div>
+    </div>
+</div>
+<table>
+    <tr>
+        <td class="book"><a class="h4 mb-2" href="/new">Новинки</a></td>
+        <td class="book"><a class="h4 mb-2" href="/bestsellers">Бестселлеры</a></td>
+    </tr>
+</table>
 <table>
     <tr>
         <td>
             <table>
             {% for book3 in books %}
                 <tr>
-                {% for book in book3 %}
-                    <td>
+                {% for book in book3 if book['count'] > 0 %}
+                    <td class="book">
                         <a href="/books/{{ book['id'] }}">
                             <img src="/static/img/{{book['image']}}" width="128" height="128"><br>
                             {{ book["name"] }}<br>
@@ -35,7 +50,7 @@
         </td>
         <td>
             {% for genre in genres %}
-                <a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a><br>   
+                <div class="genres"><a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a></div><br>   
             {% endfor %}
             
         </td>
