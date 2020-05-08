@@ -25,7 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'scrtky'
 csfr = CsrfProtect()
-url_api = 'http://localhost:8080/api'
+url_api = 'http://localhost:5000/api'
 
 def main_page_books(books):
     new = []
