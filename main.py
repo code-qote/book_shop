@@ -92,13 +92,18 @@ def register():
         )
         if form.image.data:
             tp = secure_filename(form.image.data.filename)[-4:]
-            filename = form.email.data + tp
-            form.image.data.save('static/users/' + filename)
-            user.image = filename
+            if tp in ['.jpg', '.png']:
+                filename = form.email.data + tp
+                form.image.data.save('static/users/' + filename)
+                user.image = filename
+            else:
+                user.image = 'user_default.png'
+        else:
+            user.image = 'user_default.png'
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/login')
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -185,7 +190,6 @@ def book_page(book_id):
         book = session.query(Book).get(book_id)
         user = session.query(User).get(current_user.id)
         user.basket += f'{book_id} {buying.count.data},'
-        book.count -= buying.count.data
         session.commit()
         return redirect('/books/' + str(book_id))
     book = get(url_api + '/books/' + str(book_id)).json()['book']
@@ -208,6 +212,7 @@ def book_page(book_id):
         post(url_api + '/reviews', json=json)
         reviews = get(url_api + '/reviews').json()['reviews']
         reviews = list(filter(lambda x: x['book'] == book_id, reviews))
+        print(reviews)
         accepted = False
         return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)
     return render_template('book_page.html', book=book, accepted=accepted, ordered=ordered, reviews=reviews, search=search, review=review, buying=buying)     
@@ -225,7 +230,7 @@ def basket_page(user_id):
     total = 0
     for item in basket:
         book = list(filter(lambda x: x['id'] == int(item[0]), books))[0]
-        text += f"{ book['name'] } { book['author'] } { item[1] } \n{int(item[1]) * book['price']} руб.\n-------------------\n"
+        text += f"{ book['name'] } { book['author'] } \nx{ item[1] } \n{int(item[1]) * book['price']} руб.\n-------------------\n"
         items.append(
             {
                 'id': book['id'],
@@ -248,6 +253,9 @@ def basket_page(user_id):
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
     if form.validate_on_submit():
+        for item in items:
+            book = session.query(Book).get(item['id'])
+            book.count -= item['count']
         user = session.query(User).get(current_user.id)
         send_email(user.email, text)
         user.basket = ''

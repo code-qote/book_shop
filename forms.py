@@ -19,7 +19,7 @@ class RegisterForm(FlaskForm):
     password_again = PasswordField('Повторить пароль', validators=[DataRequired()])
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
-    image = flask_wtf.file.FileField('Фотография', validators=[flask_wtf.file.FileRequired(), flask_wtf.file.FileAllowed(['jpg', 'png'], 'Только фотографии!')])
+    image = flask_wtf.file.FileField('Фотография')
     submit = SubmitField('Зарегистрироваться')
 
 class LoginForm(FlaskForm):

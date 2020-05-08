@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% block style %}
 <style>
-    div.genres{
+    .genres{
         top: 0%;
+        text-align: right;
+        align-self: right;
     }
+    div.container{
+            display: flex;
+            justify-self: right;
+            justify-content: right;
+        }
     .book{
         padding: 10px;
     }
@@ -39,8 +46,7 @@
                             <img src="/static/img/{{book['image']}}" width="128" height="128"><br>
                             {{ book["name"] }}<br>
                             {{ book["author"] }}<br>
-                            {{ book["price"] }}<br>
-                            {{ book["genre"] }}<br>
+                            {{ book["price"] }} руб.<br>
                         </a>
                     </td>
                 {% endfor %}
@@ -48,12 +54,13 @@
             {% endfor %}
             </table>
         </td>
-        <td>
-            {% for genre in genres %}
-                <div class="genres"><a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a></div><br>   
-            {% endfor %}
-            
-        </td>
+        <div class="genres">
+            <td>
+                {% for genre in genres %}
+                    <a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a><br>   
+                {% endfor %}
+            </td>
+        </div>
         <td>
 
         </td>
