@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% block style %}
 <style>
-    .genres{
-        top: 0%;
-        text-align: right;
-        align-self: right;
+    div.genres{
+        padding-left: 30px;
     }
     div.container{
             display: flex;
@@ -14,20 +12,20 @@
     .book{
         padding: 10px;
     }
+    div.book{
+        box-shadow: 10px 6px 15px 0px #000000;
+        border: 2px solid rgba(244, 98, 58, 0.71);
+    }
 </style>
 <title>BookShelf</title>
 {% endblock %}
 
 {% block content %}
-<div class="container h-10"></div>
-    <div class="row h-10 align-items-center justify-content-center text-center">
-        <div class="col-lg-10 align-self-end">
-            <hr class="divider my-4">
-            <h1 class="text-uppercase text-black font-weight-bold">BookShelf</h1>
-            <hr class="divider my-4">
-        </div>
-    </div>
-</div>
+<center>
+    <hr class="divider my-4">
+    <h1 class="text-uppercase text-black font-weight-bold">BookShelf</h1>
+    <hr class="divider my-4">
+</center>
 <table>
     <tr>
         <td class="book"><a class="h4 mb-2" href="/new">Новинки</a></td>
@@ -41,28 +39,29 @@
             {% for book3 in books %}
                 <tr>
                 {% for book in book3 if book['count'] > 0 %}
-                    <td class="book">
-                        <a href="/books/{{ book['id'] }}">
-                            <img src="/static/img/{{book['image']}}" width="128" height="128"><br>
-                            {{ book["name"] }}<br>
-                            {{ book["author"] }}<br>
-                            {{ book["price"] }} руб.<br>
-                        </a>
-                    </td>
+                        <td class="book">
+                            <div class="book">
+                                <a href="/books/{{ book['id'] }}">
+                                    <img src="/static/img/{{book['image']}}" width="128" height="128"><br>
+                                    {{ book["name"] }}<br>
+                                    {{ book["author"] }}<br>
+                                    {{ book["price"] }} руб.<br>
+                                </a>
+                            </div>
+                        </td>
+                    
                 {% endfor %}
                 </tr>
             {% endfor %}
             </table>
         </td>
-        <div class="genres">
             <td>
-                {% for genre in genres %}
-                    <a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a><br>   
-                {% endfor %}
+                <div class="genres">
+                    {% for genre in genres %}
+                        <a href="/genres/{{ genre['id'] }}">{{ genre['name'] }}</a><br> 
+                    {% endfor %}
+                </div>
             </td>
-        </div>
-        <td>
-
         </td>
     </tr>
 </table>

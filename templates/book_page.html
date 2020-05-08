@@ -10,18 +10,22 @@
         margin-left: 30px;
 
     }
+    img.book{
+        box-shadow: 10px 6px 15px 0px #000000;
+        border: 2px solid rgba(244, 98, 58, 0.71);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <center>
-    <img src="/static/img/{{book['image']}}" width="512" height="512" alt='Не найдено'>
+    <img class="book" src="/static/img/{{book['image']}}" width="512" height="512" alt='Не найдено'>
     <h2 class="text-black mt-0">{{ book['name'] }}</h2><br>
     <h3 class="h3 mb-2">{{ book['author'] }}</h3><br>
     <p class="text-black-50 mb-4">{{ book['about'] }}</p>
-    <h4 class="h4 mb-2">Стоимость: {{ book['price'] }} руб.</h4><br>
 </center>
 <div class="big_mar">
+    <h4 class="h4 mb-2">Стоимость: {{ book['price'] }} руб.</h4><br>
     {% if current_user.is_authenticated and current_user.is_admin == True %}
         <p>
             <a href="/edit_book/{{ book['id'] }}"  class="btn btn-warning">Изменить</a>
@@ -32,8 +36,8 @@
         <form action="" method="post" name="buying">
             {{ search.hidden_tag() }}
             {{ search.csrf_token }}
-            {{ buying.count.label(class="h4 mb-2") }}<br>
-            <div class="short">{{ buying.count(class = "form-control") }}</div><br>
+            {{ buying.count.label(class="h4 mb-2")}}<br>
+            <div class="short">{{ buying.count(class = "form-control", value=1)}}</div><br>
             <br>
             {{ buying.submit(type="submit", class="btn btn-primary")}}<br>
         </form>
@@ -45,10 +49,11 @@
             {{ search.csrf_token }}
             {{ review.text.label(class="h4 mb-2") }}<br>
             {{ review.text(class='form-control') }}<br>
-            {{ review.rating.label(class="h4 mb-2") }}<br>
-            <div class="short">{{ review.rating(class = "form-control") }}</div><br>
+            {{ review.rating.label(class="h4 mb-2")}}<br>
+            <div class="short">{{ review.rating(class = "form-control", value=0)}}</div><br>
             <br>
             {{ review.submit(type="submit", class="btn btn-primary") }}<br>
+            <br>
         </form>
     {% endif %}
     {% for review_ in reviews %}

@@ -10,35 +10,48 @@
     div.pad{
       padding: 10px;
     }
+    div.stick{
+      position: sticky;
+      top: 0;
+      background-color: white;
+      border-left: 4px solid #f4623a;
+      border-top: 0px solid #f4623a;
+      border-right: 4px solid #f4623a;
+      border-bottom: 4px solid #f4623a;
+      border-radius: 0px 0px 18px 18px;
+
+    }
   </style>
   {% block style %}{% endblock %}
 </head>
 <body>
-<table>
-    <tr>
-      <td class="nav-item"><div class="pad"><a href="/"><img src="/static/img/home.png" alt="Домой"></a></div></td>
-      {% if current_user.is_authenticated %}
-          <td class="nav-item"><div class="pad"><a href="/basket/{{ current_user.id }}"> <img src="/static/img/basket.png" alt="Корзина"> </a></div></td>
-          <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/logout">Выйти из аккаунта</a></div></td>
-          {% if current_user.is_admin %}
-          <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/add_book">Добавить книгу</a></div></td>
-          {% endif %}
-      {% else %}
-          <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/register">Регистрация</a></div></td>
-          <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/login">Вход</a></td>
-      {% endif %}
-    </tr>
-</table>
-<form action="" method="post" name="search">
-  {{ search.hidden_tag() }}
-  {{ search.csrf_token }}
-  <center>
-      {{ search.request.label(class="text-center mt-0") }}
-      <div class="ss">{{ search.request(class="form-control focus") }}</div><br>
-      {{ search.submit(type="submit", class="btn btn-primary btn-xl js-scroll-trigger") }}<br>
-  </center>
-</form>
-<br>
+<div class="stick">
+  <table>
+      <tr>
+        <td class="nav-item"><div class="pad"><a href="/"><img src="/static/img/home.png" alt="Домой"></a></div></td>
+        {% if current_user.is_authenticated %}
+            <td class="nav-item"><div class="pad"><a href="/basket/{{ current_user.id }}"> <img src="/static/img/basket.png" alt="Корзина"> </a></div></td>
+            <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/logout">Выйти из аккаунта</a></div></td>
+            {% if current_user.is_admin %}
+            <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/add_book">Добавить книгу</a></div></td>
+            {% endif %}
+        {% else %}
+            <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/register">Регистрация</a></div></td>
+            <td class="nav-item"><div class="pad"><a class="h4 mb-2" href="/login">Вход</a></td>
+        {% endif %}
+      </tr>
+  </table>
+</div>
+  <form action="" method="post" name="search">
+    {{ search.hidden_tag() }}
+    {{ search.csrf_token }}
+    <center>
+        {{ search.request.label(class="text-center mt-0") }}
+        <div class="ss">{{ search.request(class="form-control focus") }}</div><br>
+        {{ search.submit(type="submit", class="btn btn-primary btn-xl js-scroll-trigger") }}<br>
+    </center>
+  </form>
+  <br>
   {% block content %}{% endblock %}
 </body>
 </html>

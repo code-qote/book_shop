@@ -34,7 +34,7 @@ class SearchForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     text = TextAreaField('Ваш отзыв')
-    rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5, step=1))
+    rating = IntegerField('Рейтинг', validators=[DataRequired()], widget=NumberInput(min=0, max=5))
     submit = SubmitField('Отправить')
 
 class BuyingForm(FlaskForm):

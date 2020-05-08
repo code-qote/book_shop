@@ -8,7 +8,10 @@
     }
     div.big_mar{
         margin-left: 30px;
-
+    }
+    img.book{
+        box-shadow: 10px 6px 15px 0px #000000;
+        border: 2px solid rgba(244, 98, 58, 0.71);
     }
 </style>
 {% endblock %}
@@ -18,7 +21,7 @@
     {% if items %}
         {% for item in items %}
             <a href="/books/{{ item['id'] }}">
-                <img src="/static/img/{{ item['image'] }}" width="128" height="128" alt='Не найдено'>
+                <img class="book" src="/static/img/{{ item['image'] }}" width="128" height="128" alt='Не найдено'>
                 <h3 class="h3 mb-2">{{ item['name'] }}</h3>
                 <h3 class="h3 mb-2">{{ item['author'] }}</h3>
             </a>

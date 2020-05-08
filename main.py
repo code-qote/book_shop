@@ -58,7 +58,6 @@ def send_email(email, text):
     except:
         return 'Error'
 
-
 @login_manager.user_loader
 def load_user(user_id):
     session = db_session.create_session()
@@ -129,7 +128,7 @@ def main_page():
         books = get(url_api + '/books').json()['books']
         request = search.request.data
         for book in books:
-            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+            book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
         books.sort(key = lambda x: x['search'])
         books = list(filter(lambda x: x['search'] != 0, books))
         genres = get(url_api + '/genres').json()['genres']
@@ -153,7 +152,7 @@ def bestsellers_page():
         books = get(url_api + '/books').json()['books']
         request = search.request.data
         for book in books:
-            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+            book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
         books.sort(key = lambda x: x['search'])
         books = list(filter(lambda x: x['search'] != 0, books))
         genres = get(url_api + '/genres').json()['genres']
@@ -180,7 +179,7 @@ def book_page(book_id):
         books = get(url_api + '/books').json()['books']
         request = search.request.data
         for book in books:
-            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+            book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
         books.sort(key = lambda x: x['search'])
         books = list(filter(lambda x: x['search'] != 0, books))
         genres = get(url_api + '/genres').json()['genres']
@@ -247,7 +246,7 @@ def basket_page(user_id):
         books = get(url_api + '/books').json()['books']
         request = search.request.data
         for book in books:
-            book['search'] = len(set(request.split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".split()))
+            book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
         books.sort(key = lambda x: x['search'])
         books = list(filter(lambda x: x['search'] != 0, books))
         genres = get(url_api + '/genres').json()['genres']
@@ -277,7 +276,10 @@ def delete_basket_item(user_id, book_id):
             basket.remove(item)
             break
     user = session.query(User).get(user_id)
-    user.basket = ','.join([' '.join(item) for item in basket])
+    if len(basket) == 1:
+        user.basket = ' '.join(basket[0]) + ','
+    else:
+        user.basket = ','.join([' '.join(item) for item in basket])
     session.commit()
     return redirect('/basket/' + str(user_id))
 
