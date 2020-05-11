@@ -25,7 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'scrtky'
 csfr = CsrfProtect()
-url_api = 'http://localhost:5000/api'
+url_api = 'https://bshelfshop.herokuapp.com/api'
 
 def main_page_books(books):
     new = []
@@ -195,7 +195,7 @@ def book_page(book_id):
     reviews = get(url_api + '/reviews').json()['reviews']
     users = get(url_api + '/users').json()['users']
     accepted = True
-    if list(filter(lambda x: x['author'] == current_user.id and x['book'] == book_id, reviews)):
+    if list(filter(lambda x: current_user and x['author'] == current_user.id and x['book'] == book_id, reviews)):
         accepted = False
     reviews = list(filter(lambda x: x['book'] == book_id, reviews))
     if review.validate_on_submit():
