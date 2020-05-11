@@ -39,7 +39,6 @@ def main_page_books(books):
             a = []
     return new
 
-#TODO исправить баг, когда не авторизованный пользователь заходит на страницу книги с отзывами
 def send_email(email, text):
     smtp_host = 'smtp.yandex.ru'
     login, password = 'bshelf.shop@yandex.ru', 'password_to_app'
