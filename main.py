@@ -39,7 +39,7 @@ def main_page_books(books):
             a = []
     return new
 
-
+#TODO исправить баг, когда не авторизованный пользователь заходит на страницу книги с отзывами
 def send_email(email, text):
     smtp_host = 'smtp.yandex.ru'
     login, password = 'bshelf.shop@yandex.ru', 'password_to_app'
@@ -367,7 +367,7 @@ def delete_book(book_id):
 
 
 def main():
-    db_session.global_init("db/database.sqlite")
+    db_session.global_init()
     api.add_resource(books_resources.BookResource, '/api/books/<int:book_id>')
     api.add_resource(books_resources.BookListResource, '/api/books')
     api.add_resource(reviews_resources.ReviewResource, '/api/reviews/<int:review_id>')
@@ -376,8 +376,7 @@ def main():
     api.add_resource(genres_resources.GenreListResource, '/api/genres')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     api.add_resource(users_resource.UserListResource, '/api/users')
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=os.environ.get("PORT", 5000))
     #app.run(port=8080, host='127.0.0.1')
     csfr.init_app(app)
 

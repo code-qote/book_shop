@@ -13,10 +13,11 @@ def global_init(db_file):
     if __factory:
         return
 
-    if not db_file or not db_file.strip():
-        raise Exception("Необходимо указать файл базы данных.")
-
-    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
+    if 'DATABASE_URL' in os.environ:
+       conn_str = os.environ['DATABASE_URL']  # сработает на Heroku
+   else:
+       from config import LOCAL_DB  # сработает локально
+       conn_str = LOCAL_DB
 
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)
