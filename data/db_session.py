@@ -15,7 +15,7 @@ def global_init(db_file):
 
     if 'DATABASE_URL' in os.environ:
        conn_str = os.environ['DATABASE_URL']  # сработает на Heroku
-   else:
+    else:
        from config import LOCAL_DB  # сработает локально
        conn_str = LOCAL_DB
 
