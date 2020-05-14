@@ -128,7 +128,7 @@ def main_page():
         request = search.request.data
         for book in books:
             book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
-        books.sort(key = lambda x: x['search'])
+        books.sort(key = lambda x: x['search'], reverse=True)
         books = list(filter(lambda x: x['search'] != 0  and x['count'] > 0, books))
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
@@ -152,7 +152,7 @@ def bestsellers_page():
         request = search.request.data
         for book in books:
             book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
-        books.sort(key = lambda x: x['search'])
+        books.sort(key = lambda x: x['search'], reverse=True)
         books = list(filter(lambda x: x['search'] != 0 and x['count'] > 0, books))
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
@@ -179,7 +179,7 @@ def book_page(book_id):
         request = search.request.data
         for book in books:
             book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
-        books.sort(key = lambda x: x['search'])
+        books.sort(key = lambda x: x['search'], reverse=True)
         books = list(filter(lambda x: x['search'] != 0 and x['count'] > 0, books))
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
@@ -249,7 +249,7 @@ def basket_page(user_id):
         request = search.request.data
         for book in books:
             book['search'] = len(set(request.lower().split()) & set(f"{book['name']} {book['author']} {book['year']} {book['price']}".lower().split()))
-        books.sort(key = lambda x: x['search'])
+        books.sort(key = lambda x: x['search'], reverse=True)
         books = list(filter(lambda x: x['search'] != 0 and x['count'] > 0, books))
         genres = get(url_api + '/genres').json()['genres']
         return render_template('main_page.html', books=main_page_books(books), genres=genres, search=search)
